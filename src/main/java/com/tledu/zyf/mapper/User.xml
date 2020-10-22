@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tledu.zyf.model.User">
+
+
+	<insert id="add" parameterType="User">
+		insert into
+		t_user(username,password,nickname,age,sex,group_id)
+		values(#{username},#{password},#{nickname},#{age},#{sex},#{group.id});
+	</insert>
+
+	<delete id="delete" parameterType="int">
+		delete from t_user where id =
+		#{id}
+	</delete>
+
+	<update id="update" parameterType="User">
+		update t_user set
+		password=#{password},nickname=#{nickname},age=#{age},sex=#{sex},group_id=#{group.id}
+		where id = #{id}
+	</update>
+
+	<select id="load" parameterType="int" resultType="User">
+		select * from
+		t_user where id = #{id}
+	</select>
+
+
+	<select id="loadByGroupId" parameterType="int" resultType="int">
+		select count(*)
+		from t_user where group_id = #{group_id}
+	</select>
+
+
+	<select id="vagueUsername" parameterType="map" resultType="User">
+		select * from t_user
+		<where>
+			<if test="username!=null">
+				username like #{username}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="loadByUsername" parameterType="String"
+		resultType="User">
+		select * from t_user where username = #{username}
+	</select>
+
+	<select id="list" resultMap="listMap">
+		SELECT tu.*, td.groupname FROM
+		t_user tu INNER JOIN t_group td ON tu.group_id = td.id ORDER BY tu.id
+		ASC
+	</select>
+
+	<resultMap type="User" id="listMap" autoMapping="true">
+		<!-- association : 联系,关联 
+		property : User 中的哪个变量保存关联对象的引用(group) 
+		column : 数据库中的关联列,在数据库中以哪列类保存关联表的引用 
+		javaType : 关联类的类型是什么(需要全名,使用设置的别名也可以) -->
+		<id property="id" column="id"/>
+		<association property="group" column="group_id"
+			javaType="com.tledu.zyf.model.Group"
+			select="com.tledu.zyf.model.Group.load" />
+	</resultMap>
+
+	<!-- 需要传递多个参数的时候 就需要设置为 map -->
+	<select id="find" parameterType="map" resultMap="findMap">
+		select
+		tu.*,tg.groupname from t_user tu inner join t_group tg on
+		tu.group_id=tg.id
+		order by tu.id asc
+		limit #{pageOffset},#{pageSize}
+	</select>
+	
+	<resultMap type="User" id="findMap" autoMapping="true">
+	<!-- 这个 id 映射必须要加,如果不加查询多条数据的时候,就会只有一条数据
+			需要适应 ID 来标识唯一性
+		 -->
+	<id property="id" column="id"/>
+		<!-- association : 联系,关联 
+		property : User 中的哪个变量保存关联对象的引用(group) 
+		column : 数据库中的关联列,在数据库中以哪列类保存关联表的引用 
+		javaType : 关联类的类型是什么(需要全名,使用设置的别名也可以) -->
+		<association property="group" column="group_id"
+			javaType="com.tledu.zyf.model.Group"
+			select="com.tledu.zyf.model.Group.load" />
+	</resultMap>
+
+
+	<select id="find_count" resultType="int">
+		select count(*) from t_user tu inner join t_group tg on tu.group_id=tg.id
+		order by tu.id asc
+	</select>
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tledu.zyf.model.Group">
+
+	<insert id="add" parameterType="Group">
+		insert into
+		t_group(groupname,introduce)
+		values(#{groupname},#{introduce});
+	</insert>
+
+	<delete id="delete" parameterType="int">
+		delete from t_group where id =
+		#{id}
+	</delete>
+
+	<update id="update" parameterType="Group">
+		update t_group set
+		groupname=#{groupname} , introduce=#{introduce}
+		where id = #{id}
+	</update>
+
+	<select id="list" resultType="Group">
+		select * from t_group
+	</select>
+
+	<select id="load" parameterType="int" resultType="Group">
+		select * from
+		t_group where id = #{id}
+	</select>
+
+	<select id="loadByGroupname" parameterType="String"
+		resultType="Group">
+		select * from t_group where groupname = #{groupname}
+	</select>
+	
+	<select id="vagueGroupname" parameterType="map" resultType="Group">
+		select * from t_group
+		<where>
+			<if test="groupname!=null">
+				groupname like #{groupname}
+			</if>
+		</where>
+	</select>
+</mapper>
